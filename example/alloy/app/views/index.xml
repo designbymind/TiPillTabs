@@ -1,0 +1,7 @@
+<Alloy>
+    <NavigationWindow id="navigation" platform="ios">
+        <Window id="inbox" title="Inbox">
+            <TableView id="table" />
+        </Window>
+    </NavigationWindow>
+</Alloy>

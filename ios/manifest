@@ -1,0 +1,19 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 1.0.0
+apiversion: 2
+architectures: arm64 x86_64
+mac: false
+description: Animated UIKit pill tabs with sticky section-header support for Titanium iOS
+author: DesignByMind LLC
+license: MIT
+copyright: Copyright (c) 2026 DesignByMind LLC
+
+# these should not be edited
+name: TiPillTabs
+moduleid: ti.pilltabs
+guid: f62783ea-53d4-4248-832e-c4a3a2ef675a
+platform: iphone
+minsdk: 13.4.1.GA

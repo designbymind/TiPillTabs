@@ -1,0 +1,7 @@
+'Window': { backgroundColor: '#000000' }
+'#table[platform=ios]': {
+    style: Ti.UI.iOS.TableViewStyle.PLAIN,
+    sectionHeaderTopPadding: 0,
+    backgroundColor: '#000000',
+    separatorColor: '#28282A'
+}

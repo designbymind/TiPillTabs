@@ -1,0 +1,21 @@
+.DS_Store
+ios/build/
+ios/dist/
+ios/metadata.json
+**/xcuserdata/
+*.log
+
+# Local editor/project files
+.idea/
+.vscode/
+*.xcuserstate
+*.xcscmblueprint
+*.xcuserdatad/
+
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+*.p12
+*.mobileprovision
+*.key
