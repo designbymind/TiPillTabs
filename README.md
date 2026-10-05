@@ -42,10 +42,6 @@ tabs.selectedId = 'updates';
 
 Use an explicit height (38 matches the supplied demo; 44 or larger gives a larger touch target). Standard Titanium view positioning and sizing properties apply. The parent app owns the actual inbox/category content.
 
-## Preview
-
-<img src="screenshots/badge-dots.png" width="320" alt="Mail-style attention dots in a pinned section header">
-
 ## Properties
 
 | Property | Default | Meaning |
