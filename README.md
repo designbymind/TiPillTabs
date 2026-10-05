@@ -2,7 +2,7 @@
 
 <img alt="[TiPillTabs Example]" src="https://github.com/designbymind/TiPillTabs/blob/main/assets/TiPillTabs-iOS-Example-Screenshot.jpg" width="80%" />
 
-Native, animated iOS Mail App-style pill tabs for Titanium iOS. Written in Swift and UIKit; no SwiftUI hosting or third-party runtime dependency. Requires iOS 17+ and Titanium SDK 13.4.1.GA+.
+Interactive iOS Mail App-style pill tabs for Titanium iOS. Written in Swift and UIKit; no SwiftUI hosting or third-party runtime dependency. Requires iOS 17+ and Titanium SDK 13.4.1.GA+.
 
 ## Install
 
