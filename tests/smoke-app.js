@@ -1,19 +1,28 @@
-// Copy app.js and items.js into a Classic iOS app's Resources directory.
-// Add <module platform="iphone" version="1.0.0">ti.pilltabs</module> to tiapp.xml.
+// Copy app.js and items.js into the Resources directory of a Classic app.
+// For Android, also copy the fonts directory into the Resources directory.
+// Add <module platform="iphone" version="1.0.0">ti.pilltabs</module> to tiapp.xml for iOS.
+// Add <module platform="android" version="1.0.0">ti.pilltabs</module> to tiapp.xml for Android.
 var PillTabs = require('ti.pilltabs');
 var items = require('items');
-var window = Ti.UI.createWindow({ title: 'Inbox', backgroundColor: '#000000' });
+var isAndroid = Ti.Platform.osname === 'android';
+var window = Ti.UI.createWindow({
+    title: 'Inbox', backgroundColor: '#000000', layout: isAndroid ? 'vertical' : 'composite'
+});
 var navigation = Ti.UI.createNavigationWindow({ window: window });
 var tabs = PillTabs.createView({
     left: 15, right: 15, height: 38,
     items: items, selectedId: 'primary', aggregateId: 'all',
     gestureEnabled: true, toggleOnReselect: true,
-    spacing: 8, trailingVisibility: 5
+    spacing: 8, trailingVisibility: 5,
+    // Android draws the `icon` of each item with this font. Copy the fonts directory into Resources.
+    iconFamily: 'MaterialIcons-Regular'
 });
 // Explicit height and opaque background keep rows from showing through the header.
 var header = Ti.UI.createView({ height: 60, backgroundColor: '#000000' });
 header.add(tabs);
-var section = Ti.UI.createTableViewSection({ headerView: header });
+// iOS pins the header of a section in a plain TableView. Android scrolls it away with the rows.
+// On Android, the header is a fixed view above the table.
+var section = Ti.UI.createTableViewSection(isAndroid ? {} : { headerView: header });
 var rows = [];
 for (var i = 0; i < 60; i++) {
     var row = Ti.UI.createTableViewRow({
@@ -23,10 +32,15 @@ for (var i = 0; i < 60; i++) {
     rows.push(row);
     section.add(row);
 }
-var table = Ti.UI.createTableView({
-    style: Ti.UI.iOS.TableViewStyle.PLAIN, sectionHeaderTopPadding: 0,
-    backgroundColor: '#000000', separatorColor: '#28282A', data: [section]
-});
+var tableOptions = { backgroundColor: '#000000', separatorColor: '#28282A', data: [section] };
+if (isAndroid) {
+    window.add(header);
+} else {
+    // Ti.UI.iOS does not exist on Android.
+    tableOptions.style = Ti.UI.iOS.TableViewStyle.PLAIN;
+    tableOptions.sectionHeaderTopPadding = 0;
+}
+var table = Ti.UI.createTableView(tableOptions);
 window.add(table);
 function selectionChanged(e) {
     var item = items[e.index];
