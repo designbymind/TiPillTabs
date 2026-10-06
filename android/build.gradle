@@ -1,0 +1,5 @@
+
+dependencies {
+	// The Material chip classes come from the Material library that the Titanium SDK already includes.
+	// Add other library dependencies of the module here.
+}

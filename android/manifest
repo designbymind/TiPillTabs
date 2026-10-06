@@ -1,0 +1,16 @@
+version: 1.0.0
+apiversion: 4
+architectures: arm64-v8a armeabi-v7a x86 x86_64
+description: Material chip pill tabs for Titanium Android with the TiPillTabs JavaScript API
+author: DesignByMind LLC
+license: MIT
+copyright: Copyright (c) 2026 DesignByMind LLC
+
+# these should not be edited
+name: TiPillTabs
+moduleid: ti.pilltabs
+guid: f62783ea-53d4-4248-832e-c4a3a2ef675a
+platform: android
+classpaths:
+plugins:
+minsdk: 13.4.1.GA

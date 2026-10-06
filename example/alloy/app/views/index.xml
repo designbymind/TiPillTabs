@@ -1,6 +1,7 @@
 <Alloy>
-    <NavigationWindow id="navigation" platform="ios">
+    <NavigationWindow id="navigation">
         <Window id="inbox" title="Inbox">
+            <View id="fixedHeader" platform="android" />
             <TableView id="table" />
         </Window>
     </NavigationWindow>

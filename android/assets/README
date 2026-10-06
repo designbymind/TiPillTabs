@@ -1,0 +1,6 @@
+This directory is the assets directory of the Android module.
+
+The Android build uses this directory when it exists, and ignores the `assets` directory in the root of the repository.
+The root directory holds the screenshot and the video for the README. Without this directory, the build copies those files into each app.
+
+The build does not package this README file.

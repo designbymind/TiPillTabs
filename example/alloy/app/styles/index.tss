@@ -1,7 +1,13 @@
 'Window': { backgroundColor: '#000000' }
+'#inbox[platform=android]': { layout: 'vertical' }
+'#fixedHeader': { height: 60, backgroundColor: '#000000' }
 '#table[platform=ios]': {
     style: Ti.UI.iOS.TableViewStyle.PLAIN,
     sectionHeaderTopPadding: 0,
+    backgroundColor: '#000000',
+    separatorColor: '#28282A'
+}
+'#table[platform=android]': {
     backgroundColor: '#000000',
     separatorColor: '#28282A'
 }
