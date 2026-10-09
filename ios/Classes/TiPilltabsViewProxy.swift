@@ -49,6 +49,7 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
   var aggregateId: String?
   var spacing: CGFloat = 8
   var trailingVisibility: CGFloat = 5
+  var rightPadding: CGFloat = 0
   var animationDuration: TimeInterval = 0.3
   var animated = true
   var toggleOnReselect = true
@@ -57,6 +58,7 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
 
   private var previousCategoryId: String?
   private var buttons: [PillButton] = []
+  private let pillsContainer = UIView(frame: .zero)
   private var animator: UIViewPropertyAnimator?
   private var lastSize = CGSize.zero
   private lazy var pan = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
@@ -75,6 +77,8 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
   override init(frame: CGRect) {
     super.init(frame: frame)
     clipsToBounds = true
+    pillsContainer.clipsToBounds = true
+    addSubview(pillsContainer)
     pan.delegate = self
     pan.isEnabled = false
     addGestureRecognizer(pan)
@@ -100,7 +104,7 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
       button.titleLabel.text = item.title
       button.accessibilityLabel = item.title
       button.addTarget(self, action: #selector(tapped(_:)), for: .touchUpInside)
-      addSubview(button)
+      pillsContainer.addSubview(button)
       return button
     }
     render(animated: false)
@@ -175,21 +179,26 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
 
   func render(animated requestedAnimation: Bool) {
     stopAnimations()
-    guard !items.isEmpty, bounds.width > 0, bounds.height > 0 else { return }
+    // Padding is physical right space inside the Titanium view. The inner
+    // viewport clips only the intentional aggregate overflow, before that gap.
+    let contentWidth = max(0, bounds.width - rightPadding)
+    pillsContainer.frame = CGRect(x: 0, y: 0, width: contentWidth, height: bounds.height)
+    pillsContainer.isHidden = contentWidth <= 0 || bounds.height <= 0
+    guard !items.isEmpty, contentWidth > 0, bounds.height > 0 else { return }
     let selectedIndex = items.firstIndex(where: { $0.id == selectedId }) ?? 0
     let font = titleFont
     let titleWidth = ceil((items[selectedIndex].title as NSString).size(withAttributes: [.font: font]).width)
     let count = items.count
-    let gap = min(spacing, bounds.width / CGFloat(max(1, count * 2)))
-    let available = max(0, bounds.width - CGFloat(count - 1) * gap)
+    let gap = min(spacing, contentWidth / CGFloat(max(1, count * 2)))
+    let available = max(0, contentWidth - CGFloat(count - 1) * gap)
     // Keep the aggregate pill just inside the trailing edge in category mode.
     // Fall back to fitting every pill when the view is too narrow for this layout.
     let wantsPeek = count >= 3 && effectiveAggregateId == items.last?.id && selectedId != effectiveAggregateId
-    let peek = min(trailingVisibility, bounds.width * 0.1)
+    let peek = min(trailingVisibility, contentWidth * 0.1)
     let minInactive: CGFloat = 28
     let canPeek = wantsPeek && available - peek >= titleWidth + 66 + CGFloat(count - 2) * minInactive
     let slots = max(1, count - (canPeek ? 2 : 1))
-    let activeWidth = count == 1 ? bounds.width : min(available, min(titleWidth + 66, max(20, available - CGFloat(slots) * minInactive - (canPeek ? peek : 0))))
+    let activeWidth = count == 1 ? contentWidth : min(available, min(titleWidth + 66, max(20, available - CGFloat(slots) * minInactive - (canPeek ? peek : 0))))
     let inactiveWidth = max(0, (available - activeWidth - (canPeek ? peek : 0)) / CGFloat(slots))
     let duration = animationDuration
     let shouldAnimate = requestedAnimation && animated && duration > 0 && window != nil && !UIAccessibility.isReduceMotionEnabled
@@ -201,7 +210,7 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
         let item = items[index]
         let active = index == selectedIndex
         let width = active ? activeWidth : inactiveWidth
-        button.frame = CGRect(x: rtl ? bounds.width - x - width : x, y: 0, width: width, height: bounds.height)
+        button.frame = CGRect(x: rtl ? contentWidth - x - width : x, y: 0, width: width, height: bounds.height)
         button.layer.cornerRadius = bounds.height / 2
         let iconWidth = min(20, max(0, width))
         let iconX = active ? min(20, max(0, (width - iconWidth) / 2)) : (width - iconWidth) / 2
@@ -225,7 +234,7 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
         x += width + gap
       }
       // Hide fully clipped pills from VoiceOver; expose them when selected.
-      for button in buttons { button.accessibilityElementsHidden = !bounds.intersects(button.frame) }
+      for button in buttons { button.accessibilityElementsHidden = !pillsContainer.bounds.intersects(button.frame) }
     }
 
     if shouldAnimate {
@@ -433,6 +442,13 @@ class TiPilltabsView: TiUIView {
   @objc(setTrailingVisibility_:)
   func setTrailingVisibility_(_ value: Any?) {
     control.trailingVisibility = finiteNumber(value, fallback: 5)
+    control.render(animated: false)
+  }
+
+  @objc(setRightPadding_:)
+  func setRightPadding_(_ value: Any?) {
+    control.rightPadding = finiteNumber(value, fallback: 0)
+    proxy.replaceValue(control.rightPadding, forKey: "rightPadding", notification: false)
     control.render(animated: false)
   }
 

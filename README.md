@@ -8,11 +8,11 @@ Interactive iOS Mail App-style pill tabs for Titanium iOS. Written in Swift and 
 
 Download the platform ZIP from [GitHub Releases](https://github.com/designbymind/TiPillTabs/releases).
 
-Extract `ios/dist/ti.pilltabs-iphone-1.0.0.zip` into your app directory for an app-local installation, or into `~/Library/Application Support/Titanium` for a global installation. Add to `tiapp.xml`:
+Extract `ios/dist/ti.pilltabs-iphone-1.1.0.zip` into your app directory for an app-local installation, or into `~/Library/Application Support/Titanium` for a global installation. Add to `tiapp.xml`:
 
 ```xml
 <modules>
-    <module platform="iphone" version="1.0.0">ti.pilltabs</module>
+    <module platform="iphone" version="1.1.0">ti.pilltabs</module>
 </modules>
 ```
 
@@ -21,7 +21,7 @@ Extract `ios/dist/ti.pilltabs-iphone-1.0.0.zip` into your app directory for an a
 ```javascript
 var PillTabs = require('ti.pilltabs');
 var tabs = PillTabs.createView({
-    left: 15, right: 15, height: 38,
+    left: 15, right: 0, rightPadding: 15, height: 38,
     items: [
         { id: 'primary', title: 'Primary', systemImage: 'person.fill',
           tintColor: '#8E8E93', backgroundColor: '#28282A',
@@ -52,6 +52,7 @@ Use an explicit height (38 matches the supplied demo; 44 or larger gives a large
 | `gestureEnabled` | `false` | Enable horizontal swipe toggling on the tabs. |
 | `toggleOnReselect` | `true` | Tapping the selected category selects the aggregate; tapping selected aggregate returns to the last category. |
 | `spacing` | `8` | Gap between pills in points; reduced as needed on extremely narrow views. |
+| `rightPadding` | `0` | Physical right inset in points, inside the view. Applied to pill sizing and the trailing-preview clipping edge; can be updated live. |
 | `trailingVisibility` | `5` | Width of the aggregate pill's trailing-edge preview in category mode. Applies when aggregate is last, there are at least three items, and enough room. |
 | `animated` | `true` | Animate selection changes. Reduce Motion disables these animations automatically. |
 | `animationDuration` | `300` | Animation duration in milliseconds. Zero disables animation. |
@@ -73,6 +74,12 @@ Item dictionaries:
 Colors accept Titanium color values. The system defaults adapt to light/dark appearance. Mutating `tabs.items[0]` alone does not notify native code: assign a new `items` array. Invalid arrays are rejected as a whole. Replacing items preserves a valid selection; removing the selected item falls back to the first remaining item and emits a change. Empty arrays clear the selection.
 
 Swipe toward the leading edge selects the aggregate (leftward in left-to-right layouts); the reverse restores the last non-aggregate selection. Swipes act after release beyond 40 points and do not cycle through every category. The recognizer starts only for horizontal movement, allowing the enclosing TableView's vertical scroll recognizer to handle vertical drags.
+
+## Right padding
+
+Use `left: 16, right: 0, rightPadding: 16` to keep the view's outer right edge at its parent's edge while reserving 16 points inside it. The selected All Chats pill fits before that inset. In category mode, the aggregate preview appears at the inset content edge; its intentional overflow is clipped before the padding, keeping that gap clear.
+
+`rightPadding` defaults to zero, preserving previous layouts. Negative values clamp to zero; non-finite values reset to zero. Values larger than the view width leave no visible pill content. The inset is physical right padding in both left-to-right and right-to-left layouts. `tabs.rightPadding = 24` updates the layout without changing selection or emitting `change`.
 
 ## Attention dots
 

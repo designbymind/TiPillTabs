@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+- Add live `rightPadding` to reserve space inside the pill view's right edge.
+- Apply the inset to selected-pill sizing, narrow layouts, and the aggregate preview viewport.
+- Preserve existing behavior when padding is zero; update Classic/Alloy examples.
+
 ## 1.0.0
 
 Initial iOS release:

@@ -1,4 +1,16 @@
-# TiPillTabs 1.0.0 validation
+# TiPillTabs validation
+
+## 1.1.0 right padding — October 8, 2026
+
+- Device arm64 and simulator arm64/x86_64 module compilation passed with Titanium SDK 13.4.1.GA and Xcode 27.1 beta.
+- An isolated Classic consumer declaring ti.pilltabs 1.1.0 compiled and ran on iPhone 17 Pro / iOS 26.5 simulator.
+- All 24 live bridge checks passed; see [padding results](tests/padding-results.json). New coverage checks creation-time and live rightPadding, unchanged outer view width, negative/non-finite normalization, and preserved selection/events. Existing badge and selection checks continue to pass.
+- [Right-padding screenshot](screenshots/right-padding.png) shows selected All Mail fully visible with a 24-point internal right gap while the section header is pinned.
+- Updated Classic/test JavaScript syntax, Alloy iOS compilation, and git diff whitespace checks passed.
+- Native layout uses a separate clipped inner viewport so category-mode aggregate overflow stops before the padded gap. This preview path and physical-device animation feel still require user interaction testing.
+- No DateMaps integration, global module installation, GitHub push, or release was performed for 1.1.0.
+
+## 1.0.0 baseline
 
 Validated October 5, 2026 with Titanium SDK 13.4.1.GA, Xcode 27.1 beta, and an iPhone 17 Pro simulator running iOS 26.5. Minimum deployment target: iOS 17.0.
 

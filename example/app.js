@@ -1,11 +1,11 @@
 // Copy app.js and items.js into a Classic iOS app's Resources directory.
-// Add <module platform="iphone" version="1.0.0">ti.pilltabs</module> to tiapp.xml.
+// Add <module platform="iphone" version="1.1.0">ti.pilltabs</module> to tiapp.xml.
 var PillTabs = require('ti.pilltabs');
 var items = require('items');
 var window = Ti.UI.createWindow({ title: 'Inbox', backgroundColor: '#000000' });
 var navigation = Ti.UI.createNavigationWindow({ window: window });
 var tabs = PillTabs.createView({
-    left: 15, right: 15, height: 38,
+    left: 15, right: 0, rightPadding: 15, height: 38,
     items: items, selectedId: 'primary', aggregateId: 'all',
     gestureEnabled: true, toggleOnReselect: true,
     spacing: 8, trailingVisibility: 5

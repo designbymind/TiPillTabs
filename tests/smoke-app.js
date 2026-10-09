@@ -1,11 +1,11 @@
 // Copy app.js and items.js into a Classic iOS app's Resources directory.
-// Add <module platform="iphone" version="1.0.0">ti.pilltabs</module> to tiapp.xml.
+// Add <module platform="iphone" version="1.1.0">ti.pilltabs</module> to tiapp.xml.
 var PillTabs = require('ti.pilltabs');
 var items = require('items');
 var window = Ti.UI.createWindow({ title: 'Inbox', backgroundColor: '#000000' });
 var navigation = Ti.UI.createNavigationWindow({ window: window });
 var tabs = PillTabs.createView({
-    left: 15, right: 15, height: 38,
+    left: 15, right: 0, rightPadding: 15, height: 38,
     items: items, selectedId: 'primary', aggregateId: 'all',
     gestureEnabled: true, toggleOnReselect: true,
     spacing: 8, trailingVisibility: 5
@@ -51,6 +51,17 @@ tabs.addEventListener('change', function (e) {
 window.addEventListener('open', function () {
     setTimeout(function () {
         function tabItem(id) { return tabs.items.filter(function (item) { return item.id === id; })[0]; }
+        check('initial rightPadding bridge', tabs.rightPadding === 15);
+        var initialWidth = tabs.rect.width;
+        tabs.rightPadding = 24;
+        check('live rightPadding bridge', tabs.rightPadding === 24);
+        check('padding preserves outer width', tabs.rect.width === initialWidth);
+        tabs.rightPadding = -5;
+        check('negative padding clamps to zero', tabs.rightPadding === 0);
+        tabs.rightPadding = Infinity;
+        check('nonfinite padding resets to zero', tabs.rightPadding === 0);
+        tabs.rightPadding = 24;
+        check('padding preserves selection/events', tabs.selectedId === 'primary' && events.length === 0);
         check('initial badge property', tabItem('updates').badge === true);
         tabs.hideBadge('updates');
         check('hideBadge bridge', tabItem('updates').badge === false);
@@ -91,7 +102,7 @@ window.addEventListener('open', function () {
                     setTimeout(function () {
                         check('selection survives table scroll', tabs.selectedId === 'primary');
                         tabs.items = items; // Restore original Mail-style colors and dots for visual QA.
-                        tabs.selectedId = 'promotions';
+                        tabs.selectedId = 'all'; // Visual QA: trailing selected pill must leave the padded gap.
                         var report = { checks: checks, events: events };
                         Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'pilltabs-results.json').write(JSON.stringify(report));
                         Ti.API.info('[PILLTEST] FINISHED ' + JSON.stringify(report));

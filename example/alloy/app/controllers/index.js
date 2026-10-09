@@ -2,7 +2,7 @@
 var PillTabs = require('ti.pilltabs');
 var items = require('items');
 var tabs = PillTabs.createView({
-    left: 15, right: 15, height: 38, items: items,
+    left: 15, right: 0, rightPadding: 15, height: 38, items: items,
     selectedId: 'primary', aggregateId: 'all', gestureEnabled: true
 });
 var header = Ti.UI.createView({ height: 60, backgroundColor: '#000000' });

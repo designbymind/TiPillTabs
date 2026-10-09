@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
     s.name         = "TiPillTabs"
-    s.version      = "1.0.0"
+    s.version      = "1.1.0"
     s.summary      = "The TiPillTabs Titanium module."
 
     s.description  = <<-DESC
