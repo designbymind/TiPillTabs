@@ -1,10 +1,14 @@
 # Changelog
 
-## 1.1.0
+## 1.1.0 (reissued)
 
-- Add live `rightPadding` to reserve space inside the pill view's right edge.
-- Apply the inset to selected-pill sizing, narrow layouts, and the aggregate preview viewport.
-- Preserve existing behavior when padding is zero; update Classic/Alloy examples.
+- Add live `rightPadding`, applied only when the final item is selected. Other selections retain the full-width trailing preview.
+- Animate the inner clipping edge with the pill geometry; preserve zero-padding behavior and selection events.
+- Replace the badge border with an icon cutout that exposes the actual pill background and avoids translucent-color halos.
+- Draw dots as display-scale-aware circles with space for smooth edges, retaining their size and position.
+- Update Classic/Alloy examples, documentation, and native light/dark appearance checks.
+
+This reissue replaces the original 1.1.0 binary. Clean the consuming app after replacing a same-version module to avoid cached native code.
 
 ## 1.0.0
 

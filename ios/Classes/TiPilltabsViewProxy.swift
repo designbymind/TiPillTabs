@@ -17,10 +17,46 @@ private struct PillItem {
   var badgeTintColor: UIColor?
 }
 
+private final class PillBadgeDot: UIView {
+  private let circle = CAShapeLayer()
+  private var color: UIColor = .clear
+
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    backgroundColor = .clear
+    layer.addSublayer(circle)
+  }
+
+  required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
+
+  func setColor(_ color: UIColor) {
+    self.color = color
+    updateCircle()
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    updateCircle()
+  }
+
+  private func updateCircle() {
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    circle.frame = bounds
+    circle.contentsScale = max(1, traitCollection.displayScale)
+    // Give the circular edge room for antialiasing on all four sides.
+    circle.path = bounds.width > 2 && bounds.height > 2
+      ? UIBezierPath(ovalIn: bounds.insetBy(dx: 1, dy: 1)).cgPath : nil
+    circle.fillColor = color.resolvedColor(with: traitCollection).cgColor
+    CATransaction.commit()
+  }
+}
+
 private final class PillButton: UIControl {
   let icon = UIImageView()
   let titleLabel = UILabel()
-  let badgeDot = UIView()
+  let badgeDot = PillBadgeDot(frame: .zero)
+  private let badgeCutoutMask = CAShapeLayer()
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -40,6 +76,28 @@ private final class PillButton: UIControl {
   }
 
   required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
+
+  func updateBadgeCutout() {
+    guard !badgeDot.isHidden, icon.bounds.width > 0, icon.bounds.height > 0 else {
+      icon.layer.mask = nil
+      return
+    }
+    let center = convert(badgeDot.center, to: icon)
+    let path = UIBezierPath(rect: icon.bounds)
+    path.append(UIBezierPath(ovalIn: CGRect(x: center.x - 4.5, y: center.y - 4.5,
+                                          width: 9, height: 9)))
+    // Remove the symbol beneath the separator instead of painting another
+    // translucent background layer over it. This exposes the pill's real fill.
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    badgeCutoutMask.frame = icon.bounds
+    badgeCutoutMask.contentsScale = max(1, traitCollection.displayScale)
+    badgeCutoutMask.fillRule = .evenOdd
+    badgeCutoutMask.fillColor = UIColor.black.cgColor
+    badgeCutoutMask.path = path.cgPath
+    icon.layer.mask = badgeCutoutMask
+    CATransaction.commit()
+  }
 }
 
 // All geometry is local to this view. No parent table/scroll delegates are replaced.
@@ -82,7 +140,7 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
     pan.delegate = self
     pan.isEnabled = false
     addGestureRecognizer(pan)
-    registerForTraitChanges([UITraitPreferredContentSizeCategory.self, UITraitUserInterfaceStyle.self, UITraitLayoutDirection.self]) {
+    registerForTraitChanges([UITraitPreferredContentSizeCategory.self, UITraitUserInterfaceStyle.self, UITraitLayoutDirection.self, UITraitDisplayScale.self]) {
       (view: PillTabsControl, _: UITraitCollection) in view.render(animated: false)
     }
   }
@@ -144,10 +202,8 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
     let button = buttons[index]
     let active = item.id == selectedId
     button.badgeDot.isHidden = !item.badge || active
-    button.badgeDot.backgroundColor = item.badgeTintColor ?? item.tintColor
-    // The pill-colored ring separates the dot from the symbol, as in Mail.
-    button.badgeDot.layer.borderColor = (active ? item.activeBackgroundColor : item.backgroundColor)
-      .resolvedColor(with: traitCollection).cgColor
+    button.badgeDot.setColor(item.badgeTintColor ?? item.tintColor)
+    button.updateBadgeCutout()
     button.accessibilityValue = item.badge ? "Needs attention" : nil
   }
 
@@ -179,12 +235,15 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
 
   func render(animated requestedAnimation: Bool) {
     stopAnimations()
-    // Padding is physical right space inside the Titanium view. The inner
-    // viewport clips only the intentional aggregate overflow, before that gap.
-    let contentWidth = max(0, bounds.width - rightPadding)
-    pillsContainer.frame = CGRect(x: 0, y: 0, width: contentWidth, height: bounds.height)
+    // Reserve the right gap only for the selected trailing item. Category
+    // mode keeps the full-width viewport and its original aggregate preview.
+    let trailingSelected = !items.isEmpty && selectedId == items.last?.id
+    let contentWidth = max(0, bounds.width - (trailingSelected ? rightPadding : 0))
     pillsContainer.isHidden = contentWidth <= 0 || bounds.height <= 0
-    guard !items.isEmpty, contentWidth > 0, bounds.height > 0 else { return }
+    guard !items.isEmpty, contentWidth > 0, bounds.height > 0 else {
+      pillsContainer.frame = CGRect(x: 0, y: 0, width: contentWidth, height: bounds.height)
+      return
+    }
     let selectedIndex = items.firstIndex(where: { $0.id == selectedId }) ?? 0
     let font = titleFont
     let titleWidth = ceil((items[selectedIndex].title as NSString).size(withAttributes: [.font: font]).width)
@@ -204,6 +263,8 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
     let shouldAnimate = requestedAnimation && animated && duration > 0 && window != nil && !UIAccessibility.isReduceMotionEnabled
 
     let geometry = { [self] in
+      // Animate the clipping edge together with the pill positions and widths.
+      pillsContainer.frame = CGRect(x: 0, y: 0, width: contentWidth, height: bounds.height)
       let rtl = effectiveUserInterfaceLayoutDirection == .rightToLeft
       var x: CGFloat = 0
       for (index, button) in buttons.enumerated() {
@@ -215,11 +276,9 @@ private final class PillTabsControl: UIView, UIGestureRecognizerDelegate {
         let iconWidth = min(20, max(0, width))
         let iconX = active ? min(20, max(0, (width - iconWidth) / 2)) : (width - iconWidth) / 2
         button.icon.frame = CGRect(x: rtl ? width - iconX - iconWidth : iconX, y: (bounds.height - 20) / 2, width: iconWidth, height: 20)
-        // Six-point dot with a 1.5-point knockout ring, at the icon's upper right.
-        button.badgeDot.frame = CGRect(x: button.icon.frame.maxX - 6,
-                                      y: button.icon.frame.minY - 2, width: 9, height: 9)
-        button.badgeDot.layer.cornerRadius = 4.5
-        button.badgeDot.layer.borderWidth = 1.5
+        // Same six-point circle and center, with a one-point drawing margin.
+        button.badgeDot.frame = CGRect(x: button.icon.frame.maxX - 5.5,
+                                      y: button.icon.frame.minY - 1.5, width: 8, height: 8)
         button.icon.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 17, weight: .regular)
         button.titleLabel.font = font
         button.titleLabel.frame = CGRect(x: rtl ? 20 : iconX + 26, y: 0, width: max(0, width - iconX - 46), height: bounds.height)

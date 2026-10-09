@@ -106,6 +106,22 @@ window.addEventListener('open', function () {
                         var report = { checks: checks, events: events };
                         Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'pilltabs-results.json').write(JSON.stringify(report));
                         Ti.API.info('[PILLTEST] FINISHED ' + JSON.stringify(report));
+                        // Capture settled native geometry for both selection modes.
+                        setTimeout(function () {
+                            tabs.toImage(function (allImage) {
+                                Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'padding-all.png').write(allImage);
+                                tabs.animated = false;
+                                tabs.selectedId = 'primary';
+                                setTimeout(function () {
+                                    tabs.toImage(function (categoryImage) {
+                                        Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, 'padding-category.png').write(categoryImage);
+                                        tabs.selectedId = 'all';
+                                        tabs.animated = true;
+                                        Ti.API.info('[PILLTEST] Geometry captures complete');
+                                    }, true);
+                                }, 200);
+                            }, true);
+                        }, 500);
                     }, 700);
                 }, 400);
             }, 400);

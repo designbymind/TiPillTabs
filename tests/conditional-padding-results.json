@@ -1,0 +1,140 @@
+{
+  "checks": [
+    {
+      "name": "initial rightPadding bridge",
+      "passed": true
+    },
+    {
+      "name": "live rightPadding bridge",
+      "passed": true
+    },
+    {
+      "name": "padding preserves outer width",
+      "passed": true
+    },
+    {
+      "name": "negative padding clamps to zero",
+      "passed": true
+    },
+    {
+      "name": "nonfinite padding resets to zero",
+      "passed": true
+    },
+    {
+      "name": "padding preserves selection/events",
+      "passed": true
+    },
+    {
+      "name": "initial badge property",
+      "passed": true
+    },
+    {
+      "name": "hideBadge bridge",
+      "passed": true
+    },
+    {
+      "name": "showBadge bridge",
+      "passed": true
+    },
+    {
+      "name": "setBadge bridge",
+      "passed": true
+    },
+    {
+      "name": "badge tint override",
+      "passed": true
+    },
+    {
+      "name": "badge tint fallback reset",
+      "passed": true
+    },
+    {
+      "name": "unknown badge id ignored",
+      "passed": true
+    },
+    {
+      "name": "badges preserve selection/events",
+      "passed": true
+    },
+    {
+      "name": "badge state survives items reassignment",
+      "passed": true
+    },
+    {
+      "name": "initial selection",
+      "passed": true
+    },
+    {
+      "name": "no initialization event",
+      "passed": true
+    },
+    {
+      "name": "setter/getter",
+      "passed": true
+    },
+    {
+      "name": "one programmatic event",
+      "passed": true
+    },
+    {
+      "name": "no duplicate/invalid events",
+      "passed": true
+    },
+    {
+      "name": "invalid selection preserved",
+      "passed": true
+    },
+    {
+      "name": "live items preserve selection",
+      "passed": true
+    },
+    {
+      "name": "aggregate programmatic selection",
+      "passed": true
+    },
+    {
+      "name": "selection survives table scroll",
+      "passed": true
+    }
+  ],
+  "events": [
+    {
+      "id": "transactions",
+      "index": 1,
+      "previousId": "primary",
+      "reason": "programmatic"
+    },
+    {
+      "id": "all",
+      "index": 4,
+      "previousId": "transactions",
+      "reason": "programmatic"
+    },
+    {
+      "id": "primary",
+      "index": 0,
+      "previousId": "all",
+      "reason": "programmatic"
+    },
+    {
+      "id": "all",
+      "index": 4,
+      "previousId": "primary",
+      "reason": "programmatic"
+    }
+  ],
+  "geometry": {
+    "configuredPaddingPoints": 24,
+    "scale": 3,
+    "trailingSelected": {
+      "width": 1161,
+      "height": 114,
+      "rightGapPixels": 72
+    },
+    "categorySelected": {
+      "width": 1161,
+      "height": 114,
+      "rightGapPixels": 0
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "light": {
+    "blueCirclePixelBounds": [
+      17,
+      17
+    ],
+    "separatorMatchesPill": true,
+    "badgeRestored": true
+  },
+  "dark": {
+    "blueCirclePixelBounds": [
+      17,
+      17
+    ],
+    "separatorMatchesPill": true,
+    "badgeRestored": true
+  }
+}

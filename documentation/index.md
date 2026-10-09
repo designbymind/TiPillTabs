@@ -54,7 +54,7 @@ Use an explicit height (38 matches the supplied demo; 44 or larger gives a large
 | `gestureEnabled` | `false` | Enable horizontal swipe toggling on the tabs. |
 | `toggleOnReselect` | `true` | Tapping the selected category selects the aggregate; tapping selected aggregate returns to the last category. |
 | `spacing` | `8` | Gap between pills in points; reduced as needed on extremely narrow views. |
-| `rightPadding` | `0` | Physical right inset in points, inside the view. Applied to pill sizing and the trailing-preview clipping edge; can be updated live. |
+| `rightPadding` | `0` | Physical right inset in points, inside the view. Applied only while the final item is selected; other selections retain the full-width viewport. Can be updated live. |
 | `trailingVisibility` | `5` | Width of the aggregate pill's trailing-edge preview in category mode. Applies when aggregate is last, there are at least three items, and enough room. |
 | `animated` | `true` | Animate selection changes. Reduce Motion disables these animations automatically. |
 | `animationDuration` | `300` | Animation duration in milliseconds. Zero disables animation. |
@@ -79,13 +79,13 @@ Swipe toward the leading edge selects the aggregate (leftward in left-to-right l
 
 ## Right padding
 
-Use `left: 16, right: 0, rightPadding: 16` to keep the view's outer right edge at its parent's edge while reserving 16 points inside it. The selected All Chats pill fits before that inset. In category mode, the aggregate preview appears at the inset content edge; its intentional overflow is clipped before the padding, keeping that gap clear.
+Use `left: 16, right: 0, rightPadding: 16` to keep the view's outer right edge at its parent's edge while reserving 16 points inside it. The selected All Chats pill fits before that inset. Padding is applied only when the final item is selected. In category mode, the pills and aggregate preview use the full view width, preserving the original trailing reveal. The clipping edge animates with the pill layout when switching between these states.
 
-`rightPadding` defaults to zero, preserving previous layouts. Negative values clamp to zero; non-finite values reset to zero. Values larger than the view width leave no visible pill content. The inset is physical right padding in both left-to-right and right-to-left layouts. `tabs.rightPadding = 24` updates the layout without changing selection or emitting `change`.
+`rightPadding` defaults to zero, preserving previous layouts. Negative values clamp to zero; non-finite values reset to zero. Values larger than the view width leave no visible pill content while the final item is selected. The inset is physical right padding in both left-to-right and right-to-left layouts. `tabs.rightPadding = 24` updates the layout without changing selection or emitting `change`.
 
 ## Attention dots
 
-Set `badge: true` on an item to show its Mail-style dot at the symbol's upper-right corner. The dot defaults to the item's inactive `tintColor`; `badgeTintColor` overrides it. A small pill-colored outline separates the dot from the icon. Selecting a pill hides its dot without clearing its badge flag. It returns when the pill becomes inactive; clearing new-mail state is up to your app.
+Set `badge: true` on an item to show its Mail-style dot at the symbol's upper-right corner. The dot defaults to the item's inactive `tintColor`; `badgeTintColor` overrides it. A small circular cutout in the icon exposes the actual pill background around the dot. This avoids a separately painted border and its halo with translucent colors in light or dark mode. The dot is vector-drawn with space for smooth edges, and its cutout uses the display pixel scale. Selecting a pill hides its dot without clearing its badge flag. It returns when the pill becomes inactive; clearing new-mail state is up to your app.
 
 ```javascript
 tabs.showBadge('updates');
